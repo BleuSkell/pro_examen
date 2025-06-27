@@ -6,16 +6,22 @@ namespace Tests\Feature;
 
 use App\Models\Customer;
 use App\Models\FamilyContactPerson;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 
 class CustomerCrudTest extends TestCase
 {
+     use WithoutMiddleware; 
     use RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
+        // Only disable CSRF protection for tests
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
         // Recreate stored procedures after migrations
         \DB::unprepared('
             DROP PROCEDURE IF EXISTS sp_create_customer;
@@ -105,6 +111,7 @@ class CustomerCrudTest extends TestCase
 
     public function test_customer_can_be_created(): void
     {
+        $this->withoutExceptionHandling();
         $familyContactPerson = FamilyContactPerson::factory()->create();
         $data = [
             'family_contact_persons_id' => $familyContactPerson->id,
@@ -126,12 +133,17 @@ class CustomerCrudTest extends TestCase
 
     public function test_customer_can_be_edited(): void
     {
+        $role = Role::factory()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+        $this->actingAs($user);
+        
         $familyContactPerson = FamilyContactPerson::factory()->create();
         $customer = Customer::factory()->create([
             'family_contact_persons_id' => $familyContactPerson->id,
             'family_name' => 'Oudgezin',
             'address' => 'Oudstraat 1',
         ]);
+        
         $updateData = [
             'family_contact_persons_id' => $familyContactPerson->id,
             'amount_adults' => 3,
@@ -142,6 +154,7 @@ class CustomerCrudTest extends TestCase
             'address' => 'Nieuwstraat 2',
             'is_active' => true,
         ];
+        
         $response = $this->put(route('customers.update', $customer), $updateData);
         $response->assertRedirect(route('customers.index'));
         $this->assertDatabaseHas('customers', [
@@ -152,10 +165,15 @@ class CustomerCrudTest extends TestCase
 
     public function test_customer_can_be_deleted(): void
     {
+        $role = Role::factory()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+        $this->actingAs($user);
+        
         $familyContactPerson = FamilyContactPerson::factory()->create();
         $customer = Customer::factory()->create([
             'family_contact_persons_id' => $familyContactPerson->id,
         ]);
+        
         $response = $this->delete(route('customers.destroy', $customer));
         $response->assertRedirect(route('customers.index'));
         $this->assertDatabaseMissing('customers', [
