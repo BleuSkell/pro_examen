@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Roles (exact 3, geen duplicaten)
         $roles = [
+            ['role_name' => 'Guest', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Director', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Warehouse worker', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Volunteer', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
