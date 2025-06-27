@@ -68,7 +68,7 @@ class CustomerController extends Controller
                 $validated['address'],
                 $validated['is_active'] ?? 0
             ]);
-            return redirect()->route('customers.index')->with('success', 'Klant succesvol aangemaakt.');
+            return redirect()->route('custome   rs.index')->with('success', 'Klant succesvol aangemaakt.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Er is een fout opgetreden bij het aanmaken van de klant.');
         }

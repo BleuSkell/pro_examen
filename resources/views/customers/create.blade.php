@@ -1,6 +1,15 @@
 <x-app-layout>
     <div class="max-w-xl mx-auto py-8">
         <h1 class="text-2xl font-bold mb-6">Klant toevoegen</h1>
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form method="POST" action="{{ route('customers.store') }}">
             @csrf
 
@@ -58,6 +67,15 @@
                 <label for="special_wishes" class="block font-medium mb-1">Speciale wensen</label>
                 <input id="special_wishes" name="special_wishes" type="text" class="block w-full border-gray-300 rounded" value="{{ old('special_wishes') }}">
                 <x-input-error :messages="$errors->get('special_wishes')" class="mt-2" />
+            </div>
+
+            <!-- Actief -->
+            <div class="mb-4">
+                <label for="is_active" class="block font-medium mb-1">Actief</label>
+                <input type="hidden" name="is_active" value="0">
+                <input id="is_active" name="is_active" type="checkbox" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
+                <span class="ml-2">Deze klant is actief</span>
+                <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
             </div>
 
             <div class="flex justify-end">

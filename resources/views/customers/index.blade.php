@@ -26,9 +26,9 @@
                 @forelse($customers as $customer)
                     <tr>
                         <td class="py-2 px-4 border-b">
-                            {{ $customer->familyContactPerson?->first_name }}
-                            {{ $customer->familyContactPerson?->infix }}
-                            {{ $customer->familyContactPerson?->last_name }}
+                            {{ $customer->family_contact_first_name }}
+                            {{ $customer->family_contact_infix }}
+                            {{ $customer->family_contact_last_name }}
                         </td>
                         <td class="py-2 px-4 border-b">{{ $customer->family_name }}</td>
                         <td class="py-2 px-4 border-b">{{ $customer->address }}</td>
@@ -37,9 +37,9 @@
                         <td class="py-2 px-4 border-b">{{ $customer->amount_babies }}</td>
                         <td class="py-2 px-4 border-b">{{ $customer->special_wishes }}</td>
                         <td class="py-2 px-4 border-b flex space-x-2">
-                            <a href="{{ route('customers.show', $customer) }}" class="text-blue-500 hover:underline">Bekijken</a>
-                            <a href="{{ route('customers.edit', $customer) }}" class="text-yellow-500 hover:underline">Bewerken</a>
-                            <form action="{{ route('customers.destroy', $customer) }}" method="POST" onsubmit="return confirm('Weet je het zeker?');">
+                            <a href="{{ route('customers.show', $customer->id) }}" class="text-blue-500 hover:underline">Bekijken</a>
+                            <a href="{{ route('customers.edit', $customer->id) }}" class="text-yellow-500 hover:underline">Bewerken</a>
+                            <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" onsubmit="return confirm('Weet je het zeker?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:underline">Verwijderen</button>
