@@ -16,16 +16,16 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
-                        {{ __('Customers') }}
+                        {{ __('Klanten') }}
                     </x-nav-link>
                     <x-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
-                        {{ __('Stock') }}
+                        {{ __('Voorraad') }}
                     </x-nav-link>
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('foodPackages.index')" :active="request()->routeIs('foodPackages.index')">
                         {{ __('Voedselpakketten') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('stock.*')">
+                        {{ __('Leveranciers') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -86,10 +86,13 @@
                 {{ __('Voedselpakketten') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
-                {{ __('Customers') }}
+                {{ __('Klanten') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
-                {{ __('Stock') }}
+                {{ __('Voorraad') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('stock.*')">
+                {{ __('Leveranciers') }}
             </x-responsive-nav-link>
         </div>
 

@@ -1,11 +1,19 @@
 <x-app-layout>
-    <div class="flex flex-col items-center max-w-3xl mx-auto mt-8 mb-8">
-        <div class="flex items-center justify-between w-full mb-6">
-            <h1 class="text-2xl font-bold text-center">Voorraad</h1>
-            <a href="{{ route('stock.create') }}" class="ml-4 bg-blue-600 hover:bg-blue-700 text-black font-semibold py-2 px-4 rounded transition">
-                Voeg toe +
+    <x-slot name="header">
+        <div class="flex flex-row justify-between items-center">
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                {{ __('Voorraad') }}
+            </h2>
+
+            <a href="{{ route('stock.create') }}" class="inline-block">
+                <button class="bg-blue-500 hover:bg-blue-600 p-3 text-white rounded-lg">
+                    {{ __('Voeg toe +') }}
+                </button>
             </a>
         </div>
+    </x-slot>
+
+    <div class="flex flex-col items-center max-w-3xl mx-auto mt-8 mb-8">
         @if(session('success'))
             <div class="mb-4 text-green-600 font-semibold">
                 {{ session('success') }}
@@ -18,7 +26,7 @@
         @endif
         <button
             id="toggleDataBtn"
-            class="mb-4 bg-gray-700 hover:bg-gray-800 text-black font-semibold py-2 px-4 rounded transition"
+            class="mb-4 bg-gray-500 hover:bg-gray-600 text-black font-semibold py-2 px-4 rounded transition"
             onclick="toggleStockData()"
             type="button"
         >
