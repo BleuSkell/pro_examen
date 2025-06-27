@@ -20,7 +20,6 @@ class FoodPackageFactory extends Factory
     {
         return [
             'customer_id' => Customer::factory(),
-            'product_id' => Product::factory(),
             'package_number' => 'P-' . $this->faker->unique()->numberBetween(10000, 99999),
             'date_composed' => $this->faker->dateTime(),
             'date_issued' => $this->faker->optional()->dateTimeBetween('-1 month', 'now'),
