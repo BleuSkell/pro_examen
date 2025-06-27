@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\FoodPackage;
+use App\Models\Product;
+use App\Models\FoodPackageProduct;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +21,85 @@ class FoodPackageController extends Controller
 
         // return the view with the food packages data
         return view('foodPackages.index', compact('foodPackages'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        // Genereer automatisch pakketnummer
+        $last = FoodPackage::orderByDesc('id')->first();
+        $packageNumber = 'P-' . str_pad(($last ? $last->id + 1 : 1), 5, '0', STR_PAD_LEFT);
+        $dateComposed = now()->toDateString();
+        $products = Product::all();
+        $customers = Customer::orderBy('family_name')->get();
+
+        return view('foodPackages.create', compact('packageNumber', 'dateComposed', 'products', 'customers'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'package_number' => 'required|unique:food_packages,package_number',
+            'date_composed' => 'required|date',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.amount' => 'required|integer|min:1',
+        ]);
+
+        // Maak het pakket aan
+        $foodPackage = FoodPackage::create([
+            'customer_id' => $request->customer_id,
+            'package_number' => $request->package_number,
+            'date_composed' => $request->date_composed,
+            'date_issued' => null,
+            'date_created' => now(),
+            'date_updated' => now(),
+            'is_active' => true,
+        ]);
+
+        // Voeg producten toe
+        foreach ($request->products as $product) {
+            FoodPackageProduct::create([
+                'food_package_id' => $foodPackage->id,
+                'product_id' => $product['product_id'],
+                'amount' => $product['amount'],
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
+
+        return redirect()->route('foodPackages.index')->with('success', 'Voedselpakket aangemaakt!');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(FoodPackage $foodPackage)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, FoodPackage $foodPackage)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(FoodPackage $foodPackage)
+    {
+        //
     }
 
     /**
@@ -45,45 +127,5 @@ class FoodPackageController extends Controller
             'packageDetails' => $packageDetails,
             'products' => $products,
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(FoodPackage $foodPackage)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, FoodPackage $foodPackage)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(FoodPackage $foodPackage)
-    {
-        //
     }
 }

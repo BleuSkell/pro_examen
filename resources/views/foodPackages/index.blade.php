@@ -1,13 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
-            {{ __('Voedselpakketten') }}
-        </h2>
+        <div class="flex flex-row justify-between items-center">
+            <h2 class="font-semibold text-xl text-white leading-tight">
+                {{ __('Voedselpakketten') }}
+            </h2>
+
+            <a href="{{  route('foodPackages.create') }}" class="inline-block">
+                <button class="bg-blue-500 hover:bg-blue-600 p-3 text-white rounded-lg">
+                    {{ __('Pakket aanmaken') }}
+                </button>
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                @if (session('success'))
+                    <div class="flex flex-row justify-center">
+                        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md shadow w-[50%]">
+                            {{ session('success') }}
+                        </div>
+                    </div>
+                @endif
+
                 @foreach ($foodPackages as $foodPackage)
                     <div class="bg-gray-200 flex flex-row justify-between items-center p-4 mb-4 w-full rounded-lg">
                         <div class="flex flex-col">
