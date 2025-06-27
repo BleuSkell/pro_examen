@@ -18,6 +18,13 @@
                     </a>
                 </div>
 
+                <!-- Succesmelding -->
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-600 text-white rounded">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 @if($suppliers->count())
                     <div class="overflow-x-auto">
                         <table class="">
@@ -48,7 +55,7 @@
                                                class="text-blue-400 hover:underline inline-block px-2 py-1 rounded hover:bg-blue-100 transition">
                                                 wijzig
                                             </a>
-                                            <form action="#" method="POST" class="inline">
+                                            <form action="{{ route('suppliers.destroy', $supplier) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
