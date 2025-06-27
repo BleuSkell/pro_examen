@@ -33,34 +33,35 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
+        try {
+            $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
 
-        $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
-        if (!$supplier) {
-            $supplier = \App\Models\Supplier::create([
-                'company_name' => $validated['company_name'],
-                'contact_person_id' => 1,
-                'address' => '',
-                'next_delivery_date' => now(),
-                'next_delivery_time' => now()->format('H:i:s'),
-                'date_created' => now(),
-                'date_updated' => now(),
-                'is_active' => true,
-            ]);
-        }
+            $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
+            if (!$supplier) {
+                $supplier = \App\Models\Supplier::create([
+                    'company_name' => $validated['company_name'],
+                    'contact_person_id' => 1,
+                    'address' => '',
+                    'next_delivery_date' => now(),
+                    'next_delivery_time' => now()->format('H:i:s'),
+                    'date_created' => now(),
+                    'date_updated' => now(),
+                    'is_active' => true,
+                ]);
+            }
 
-        $category = \App\Models\ProductCategory::find($validated['categorie']);
-        if (!$category) {
-            abort(400, 'Categorie niet gevonden');
-        }
+            $category = \App\Models\ProductCategory::find($validated['categorie']);
+            if (!$category) {
+                abort(400, 'Categorie niet gevonden');
+            }
 
-        $product = \App\Models\Product::where([
-            ['product_name', $validated['product_name']],
-            ['supplier_id', $supplier->id],
-            ['product_category_id', $category->id],
-        ])->first();
+            $productExists = \App\Models\Product::where('product_name', $validated['product_name'])->exists();
+            if ($productExists) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['product_name' => 'Maken van product naam mislukt: er bestaat al een product naam.']);
+            }
 
-        if (!$product) {
             $product = \App\Models\Product::create([
                 'product_name' => $validated['product_name'],
                 'supplier_id' => $supplier->id,
@@ -70,16 +71,20 @@ class StockController extends Controller
                 'date_updated' => now(),
                 'is_active' => true,
             ]);
+
+            \App\Models\Stock::create([
+                'product_id' => $product->id,
+                'amount' => $validated['amount'],
+                'date_created' => now(),
+                'is_active' => true,
+            ]);
+
+            return redirect()->route('stock.index')->with('success', 'Voorraad toegevoegd!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Er is een fout opgetreden: ' . $e->getMessage()]);
         }
-
-        \App\Models\Stock::create([
-            'product_id' => $product->id,
-            'amount' => $validated['amount'],
-            'date_created' => now(),
-            'is_active' => true,
-        ]);
-
-        return redirect()->route('stock.index')->with('success', 'Voorraad toegevoegd!');
     }
 
     /**
@@ -118,52 +123,67 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
-        $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
+        try {
+            $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
 
-        $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
-        if (!$supplier) {
-            $supplier = \App\Models\Supplier::create([
-                'company_name' => $validated['company_name'],
-                'contact_person_id' => 1,
-                'address' => '',
-                'next_delivery_date' => now(),
-                'next_delivery_time' => now()->format('H:i:s'),
-                'date_created' => now(),
+            $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
+            if (!$supplier) {
+                $supplier = \App\Models\Supplier::create([
+                    'company_name' => $validated['company_name'],
+                    'contact_person_id' => 1,
+                    'address' => '',
+                    'next_delivery_date' => now(),
+                    'next_delivery_time' => now()->format('H:i:s'),
+                    'date_created' => now(),
+                    'date_updated' => now(),
+                    'is_active' => true,
+                ]);
+            }
+
+            $category = \App\Models\ProductCategory::find($validated['categorie']);
+            if (!$category) {
+                abort(400, 'Categorie niet gevonden');
+            }
+
+            $productExists = \App\Models\Product::where('product_name', $validated['product_name'])
+                ->where('id', '!=', optional($stock->product)->id)
+                ->exists();
+            if ($productExists) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['product_name' => 'Bewerken van product naam mislukt: er bestaat al een product naam.']);
+            }
+
+            $product = \App\Models\Product::where([
+                ['product_name', $validated['product_name']],
+                ['supplier_id', $supplier->id],
+                ['product_category_id', $category->id],
+            ])->first();
+
+            if (!$product) {
+                $product = \App\Models\Product::create([
+                    'product_name' => $validated['product_name'],
+                    'supplier_id' => $supplier->id,
+                    'product_category_id' => $category->id,
+                    'barcode' => uniqid(),
+                    'date_created' => now(),
+                    'date_updated' => now(),
+                    'is_active' => true,
+                ]);
+            }
+
+            $stock->update([
+                'product_id' => $product->id,
+                'amount' => $validated['amount'],
                 'date_updated' => now(),
-                'is_active' => true,
             ]);
+
+            return redirect()->route('stock.index')->with('success', 'Gegevens succesvol gewijzigd!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Er is een fout opgetreden: ' . $e->getMessage()]);
         }
-
-        $category = \App\Models\ProductCategory::find($validated['categorie']);
-        if (!$category) {
-            abort(400, 'Categorie niet gevonden');
-        }
-
-        $product = \App\Models\Product::where([
-            ['product_name', $validated['product_name']],
-            ['supplier_id', $supplier->id],
-            ['product_category_id', $category->id],
-        ])->first();
-
-        if (!$product) {
-            $product = \App\Models\Product::create([
-                'product_name' => $validated['product_name'],
-                'supplier_id' => $supplier->id,
-                'product_category_id' => $category->id,
-                'barcode' => uniqid(),
-                'date_created' => now(),
-                'date_updated' => now(),
-                'is_active' => true,
-            ]);
-        }
-
-        $stock->update([
-            'product_id' => $product->id,
-            'amount' => $validated['amount'],
-            'date_updated' => now(),
-        ]);
-
-        return redirect()->route('stock.index')->with('success', 'Gegevens succesvol gewijzigd!');
     }
 
     /**
@@ -171,7 +191,14 @@ class StockController extends Controller
      */
     public function destroy(Stock $stock)
     {
-        $stock->delete();
-        return redirect()->route('stock.index')->with('success', 'Voorraad verwijderd!');
+        try {
+            if ($stock->amount > 10) {
+                return redirect()->route('stock.index')->with('error', 'Te groot voorraad, kan niet worden verwijderd!');
+            }
+            $stock->delete();
+            return redirect()->route('stock.index')->with('success', 'Voorraad verwijderd!');
+        } catch (\Exception $e) {
+            return redirect()->route('stock.index')->with('error', 'Er is een fout opgetreden: ' . $e->getMessage());
+        }
     }
 }

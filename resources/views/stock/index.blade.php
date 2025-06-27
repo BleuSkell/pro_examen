@@ -11,9 +11,9 @@
                 {{ session('success') }}
             </div>
         @endif
-        @if(session('success') && session('success') === 'Voorraad verwijderd!')
+        @if(session('error'))
             <div class="mb-4 text-red-600 font-semibold">
-                {{ session('success') }}
+                {{ session('error') }}
             </div>
         @endif
         <button
