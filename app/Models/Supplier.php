@@ -17,7 +17,7 @@ class Supplier extends Model
     protected $table = 'suppliers';
 
     protected $fillable = [
-        'contact_persons_id',
+        'contact_person_id',
         'company_name',
         'address',
         'next_delivery_date',
@@ -29,11 +29,14 @@ class Supplier extends Model
 
     public function contactPerson()
     {
-        return $this->hasOne(ContactPerson::class);
+        return $this->belongsTo(ContactPerson::class, 'contact_person_id');
+
     }
 
     public function products()
     {
         return $this->hasMany(Product::class);
     }
+
+  
 }
