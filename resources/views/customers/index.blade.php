@@ -1,5 +1,10 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-6">
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Klanten</h1>
             <a href="{{ route('customers.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Klant toevoegen</a>

@@ -12,7 +12,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::orderByDesc('date_created')->get();
         return view('customers.index', compact('customers'));
     }
 
@@ -21,7 +21,8 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('customers.create');
+        $familyContactPersons = \App\Models\FamilyContactPerson::all();
+        return view('customers.create', compact('familyContactPersons'));
     }
 
     /**
@@ -29,18 +30,28 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $input = $request->all();
+        // Truncate address to 255 characters before validation
+        if (isset($input['address'])) {
+            $input['address'] = mb_substr($input['address'], 0, 255);
+        }
+
+        $validated = validator($input, [
             'family_contact_persons_id' => 'required|exists:family_contact_persons,id',
             'amount_adults' => 'required|integer',
             'amount_children' => 'nullable|integer',
             'amount_babies' => 'nullable|integer',
             'special_wishes' => 'nullable|string|max:255',
             'family_name' => 'required|string|max:100',
-            'address' => 'required|string|max:255',
+            'address' => 'required|string|max:255|unique:customers,address',
             'is_active' => 'boolean',
-        ]);
+        ], [
+            'address.unique' => 'Dit adres is al in gebruik.',
+            'address.max' => 'Het adres mag maximaal 255 tekens zijn.'
+        ])->validate();
+
         Customer::create($validated);
-        return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
+        return redirect()->route('customers.index')->with('success', 'Klant succesvol aangemaakt.');
     }
 
     /**
@@ -56,7 +67,8 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        return view('customers.edit', compact('customer'));
+        $familyContactPersons = \App\Models\FamilyContactPerson::all();
+        return view('customers.edit', compact('customer', 'familyContactPersons'));
     }
 
     /**
@@ -71,7 +83,7 @@ class CustomerController extends Controller
             'amount_babies' => 'nullable|integer',
             'special_wishes' => 'nullable|string|max:255',
             'family_name' => 'required|string|max:100',
-            'address' => 'required|string|max:255',
+            'address' => 'required|string|max:255|unique:customers,address,' . $customer->id,
             'is_active' => 'boolean',
         ]);
         $customer->update($validated);
