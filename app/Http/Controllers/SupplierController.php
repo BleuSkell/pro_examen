@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
@@ -13,7 +14,6 @@ class SupplierController extends Controller
     public function index()
     {
         $suppliers = Supplier::with('contactPerson')->paginate(5);
-
         return view('suppliers.index', compact('suppliers'));
     }
 
@@ -22,7 +22,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-          return view('suppliers.create');
+        return view('suppliers.create');
     }
 
     /**
@@ -38,20 +38,19 @@ class SupplierController extends Controller
                 'regex:/^[A-Za-zÀ-ÿ\s]+$/u' // Alleen letters en spaties
             ],
             'address' => 'required|string|max:255',
-
             'email' => [
                 'required',
                 'email',
                 'max:255',
                 'unique:contact_persons,email',
-                'regex:/^[A-Za-z0-9_@.]+$/', // Alleen letters, cijfers, _ en @ en punt
+                'regex:/^[A-Za-z0-9_@.]+$/',
             ],
             'phone' => [
                 'required',
                 'string',
                 'max:20',
                 'unique:contact_persons,phone',
-                'regex:/^\+?[0-9]+$/', // Alleen cijfers, optioneel beginnend met +
+                'regex:/^\+?[0-9]+$/',
             ],
         ], [
             'required' => 'u bent verplicht om dit in te vullen',
@@ -61,47 +60,72 @@ class SupplierController extends Controller
             'email.email' => 'voer een geldig e-mailadres in',
         ]);
 
-        // Contactpersoon aanmaken
-        $contactPerson = \App\Models\ContactPerson::create([
-            'first_name' => 'Onbekend',
-            'last_name' => $validated['company_name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-        ]);
+        try {
+            // Maak eerst de contactpersoon aan
+            $contactPerson = \App\Models\ContactPerson::create([
+                'first_name' => 'Onbekend',
+                'last_name' => $validated['company_name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ]);
 
-        // Leverancier aanmaken
-        Supplier::create([
-            'contact_person_id' => $contactPerson->id,
-            'company_name' => $validated['company_name'],
-            'address' => $validated['address'],
-        ]);
+            // Parameters voor stored procedure
+            $contactPersonId = $contactPerson->id;
+            $companyName = $validated['company_name'];
+            $address = $validated['address'];
+            $nextDeliveryDate = null; // Pas aan indien je dit als input wil
+            $nextDeliveryTime = null;
 
-        return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol toegevoegd.');
+            // Roep stored procedure aan
+            DB::statement('CALL InsertSupplier(?, ?, ?, ?, ?, @success, @error_msg)', [
+                $contactPersonId,
+                $companyName,
+                $address,
+                $nextDeliveryDate,
+                $nextDeliveryTime,
+            ]);
+
+            // Lees output parameters uit
+            $result = DB::select('SELECT @success as success, @error_msg as error_msg')[0];
+
+            if (!$result->success) {
+                // Verwijder contactpersoon om rollback te doen
+                $contactPerson->delete();
+                return back()->withInput()->withErrors(['db_error' => $result->error_msg ?? 'Onbekende fout bij opslaan leverancier.']);
+            }
+
+            return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol toegevoegd.');
+
+        } catch (\Exception $e) {
+            if (isset($contactPerson)) {
+                $contactPerson->delete();
+            }
+            return back()->withInput()->withErrors(['exception' => 'Er is een fout opgetreden: ' . $e->getMessage()]);
         }
+    }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Supplier $supplier)
+    {
+        //
+    }
 
-        /**
-         * Display the specified resource.
-         */
-        public function show(Supplier $supplier)
-        {
-            //
-        }
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Supplier $supplier)
+    {
+        $supplier->load('contactPerson');
+        return view('suppliers.edit', compact('supplier'));
+    }
 
-        /**
-         * Show the form for editing the specified resource.
-         */
-        public function edit(Supplier $supplier)
-        {
-            $supplier->load('contactPerson');
-            return view('suppliers.edit', compact('supplier'));
-        }
-
-        /**
-         * Update the specified resource in storage.
-         */
-        public function update(Request $request, Supplier $supplier)
-        {
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Supplier $supplier)
+    {
         $validated = $request->validate([
             'email' => [
                 'required',
@@ -128,16 +152,15 @@ class SupplierController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Supplier $supplier)
-    
     {
-    // Verwijder eerst de contactpersoon als die bestaat
-    if ($supplier->contactPerson) {
-        $supplier->contactPerson->delete();
-    }
+        // Verwijder eerst de contactpersoon als die bestaat
+        if ($supplier->contactPerson) {
+            $supplier->contactPerson->delete();
+        }
 
-    // Verwijder vervolgens de leverancier
-    $supplier->delete();
+        // Verwijder vervolgens de leverancier
+        $supplier->delete();
 
-    return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol verwijderd.');
+        return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol verwijderd.');
     }
 }
