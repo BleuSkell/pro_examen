@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FoodPackage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FoodPackageController extends Controller
 {
@@ -11,8 +12,12 @@ class FoodPackageController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
+    {   
+        // call the sp that retrieves all food packages
+        $foodPackages = DB::select('CALL sp_get_all_foodpackages()');
+
+        // return the view with the food packages data
+        return view('foodPackages.index', compact('foodPackages'));
     }
 
     /**
