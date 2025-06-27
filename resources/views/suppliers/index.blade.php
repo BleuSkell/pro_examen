@@ -44,15 +44,15 @@
                                             {{ $supplier->next_delivery_time ? \Carbon\Carbon::parse($supplier->next_delivery_time)->format('H:i') : '' }}
                                         </td>
                                         <td class="px-3 py-2 sm:px-4 sm:py-3 space-x-2 text-sm sm:text-base">
-                                            <a href="#" 
-                                               class="text-blue-600 hover:underline inline-block px-2 py-1 rounded hover:bg-blue-100 transition">
+                                            <a href="{{ route('suppliers.edit', $supplier) }}" 
+                                               class="text-blue-400 hover:underline inline-block px-2 py-1 rounded hover:bg-blue-100 transition">
                                                 wijzig
                                             </a>
                                             <form action="#" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
-                                                        class="text-red-600 hover:underline inline-block px-2 py-1 rounded hover:bg-red-100 transition"
+                                                        class="text-red-500 hover:underline inline-block px-2 py-1 rounded hover:bg-red-100 transition"
                                                         onclick="return confirm('Weet je zeker dat je deze leverancier wilt verwijderen?');">
                                                     verwijder
                                                 </button>
@@ -63,7 +63,7 @@
                             </tbody>
                         </table>
 
-                        <!-- Hier is de paginatie met text-white zodat de tekst wit wordt -->
+                        <!-- Paginatie -->
                         <div class="mt-4 text-center text-white">
                             {{ $suppliers->links() }}
                         </div>
