@@ -5,15 +5,16 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\ContactPerson;
-use App\Models\Customer;
-use App\Models\FamilyContactPerson;
-use App\Models\FoodPackage;
-use App\Models\Product;
-use App\Models\ProductCategory;
 use App\Models\Role;
+use App\Models\User;
+use App\Models\FamilyContactPerson;
+use App\Models\Customer;
+use App\Models\ProductCategory;
+use App\Models\ContactPerson;
 use App\Models\Supplier;
+use App\Models\Product;
+use App\Models\Stock;
+use App\Models\FoodPackage;
 use App\Models\FoodPackageProduct;
 
 class DatabaseSeeder extends Seeder
@@ -113,7 +114,6 @@ class DatabaseSeeder extends Seeder
                 'supplier_id' => $supplierIds[array_rand($supplierIds)],
                 'product_name' => fake()->word(),
                 'barcode' => fake()->unique()->ean13(),
-                'amount' => fake()->numberBetween(1, 100),
                 'date_created' => now(),
                 'date_updated' => now(),
                 'is_active' => true,
@@ -121,6 +121,19 @@ class DatabaseSeeder extends Seeder
         }
         Product::insert($products);
         $productIds = Product::pluck('id')->toArray();
+
+        // 8b. Stocks (voor elk product een voorraadregel)
+        $stocks = [];
+        foreach ($productIds as $productId) {
+            $stocks[] = [
+                'product_id' => $productId,
+                'amount' => fake()->numberBetween(0, 1000),
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ];
+        }
+        Stock::insert($stocks);
 
         // 9. FoodPackages (10, elk voor 1 customer)
         $foodPackages = [];
