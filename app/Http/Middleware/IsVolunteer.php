@@ -15,6 +15,10 @@ class IsVolunteer
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = auth()->user();
+        if (!$user || $user->role->role_name !== 'Volunteer') {
+            abort(403, 'Alleen bestemd voor vrijwilligers.');
+        }
         return $next($request);
     }
 }
