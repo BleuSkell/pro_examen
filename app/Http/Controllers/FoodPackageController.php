@@ -21,6 +21,33 @@ class FoodPackageController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        // Call the stored procedure
+        $results = DB::select('CALL sp_get_food_package_details_by_id(?)', [$id]);
+
+        // Laravel only returns the first result set, so we need to use the PDO connection for multiple result sets
+        $pdo = DB::getPdo();
+        $stmt = $pdo->prepare('CALL sp_get_food_package_details_by_id(?)');
+        $stmt->execute([$id]);
+
+        // First result set: food package + customer + family contact person
+        $packageDetails = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        // Move to next result set: products in the package
+        $stmt->nextRowset();
+        $products = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Pass to the view
+        return view('foodPackages.show', [
+            'packageDetails' => $packageDetails,
+            'products' => $products,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -32,14 +59,6 @@ class FoodPackageController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(FoodPackage $foodPackage)
     {
         //
     }

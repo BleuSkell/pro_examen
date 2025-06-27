@@ -17,7 +17,7 @@
                         </div>
 
                         <div>
-                            <a href="">
+                            <a href="{{  route('foodPackages.show', $foodPackage->foodpackage_id) }}" class="inline-block">
                                 <button class="bg-blue-500 hover:bg-blue-600 p-3 text-white rounded-lg">
                                     {{ __('Bekijk details') }}
                                 </button>
