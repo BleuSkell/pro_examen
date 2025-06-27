@@ -6,6 +6,7 @@ use App\Models\FoodPackage;
 use App\Models\Product;
 use App\Models\FoodPackageProduct;
 use App\Models\Customer;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,13 +15,32 @@ class FoodPackageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {   
-        // call the sp that retrieves all food packages
+        // Haal alle pakketten op via de stored procedure
         $foodPackages = DB::select('CALL sp_get_all_foodpackages()');
 
-        // return the view with the food packages data
-        return view('foodPackages.index', compact('foodPackages'));
+        // Zet om naar array (anders werkt array_slice niet)
+        $foodPackages = json_decode(json_encode($foodPackages), true);
+
+        // Paginatie parameters
+        $perPage = 4;
+        $currentPage = $request->input('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+
+        // Slice de array voor de huidige pagina
+        $itemsForCurrentPage = array_slice($foodPackages, $offset, $perPage);
+
+        // Maak een paginator
+        $paginated = new LengthAwarePaginator(
+            $itemsForCurrentPage,
+            count($foodPackages),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('foodPackages.index', ['foodPackages' => $paginated]);
     }
 
     /**
