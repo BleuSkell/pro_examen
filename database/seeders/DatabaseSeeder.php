@@ -24,8 +24,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Roles (exact 3, geen duplicaten)
+        // 1. Roles (exact 4, geen duplicaten)
         $roles = [
+            ['role_name' => 'Guest', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Director', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Warehouse worker', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
             ['role_name' => 'Volunteer', 'date_created' => now(), 'date_updated' => now(), 'is_active' => true],
@@ -37,17 +38,53 @@ class DatabaseSeeder extends Seeder
         $users = [];
         for ($i = 0; $i < 10; $i++) {
             $users[] = [
-                'role_id' => $roleIds[$i % 3],
-                'name' => fake()->name(),
-                'email' => fake()->unique()->safeEmail(),
-                'email_verified_at' => now(),
-                'password' => Hash::make('password'),
-                'remember_token' => \Str::random(10),
-                'date_created' => now(),
-                'date_updated' => now(),
-                'is_active' => true,
+            'role_id' => $roleIds[$i % 3],
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => \Str::random(10),
+            'date_created' => now(),
+            'date_updated' => now(),
+            'is_active' => true,
             ];
         }
+
+        // Extra users: 1 director, 1 warehouse worker, 1 volunteer
+        $users[] = [
+            'role_id' => $roleIds[1], // Director
+            'name' => 'Director User',
+            'email' => 'director@example.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => \Str::random(10),
+            'date_created' => now(),
+            'date_updated' => now(),
+            'is_active' => true,
+        ];
+        $users[] = [
+            'role_id' => $roleIds[2], // Warehouse worker
+            'name' => 'Warehouse Worker User',
+            'email' => 'warehouse@example.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => \Str::random(10),
+            'date_created' => now(),
+            'date_updated' => now(),
+            'is_active' => true,
+        ];
+        $users[] = [
+            'role_id' => $roleIds[3], // Volunteer
+            'name' => 'Volunteer User',
+            'email' => 'volunteer@example.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => \Str::random(10),
+            'date_created' => now(),
+            'date_updated' => now(),
+            'is_active' => true,
+        ];
+
         User::insert($users);
 
         // 3. Family contact persons (10)
