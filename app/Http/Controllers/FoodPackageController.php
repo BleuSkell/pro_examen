@@ -69,7 +69,7 @@ class FoodPackageController extends Controller
             'date_composed' => 'required|date',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|exists:products,id',
-            'products.*.amount' => 'required|integer|min:1',
+            'products.*.amount' => 'required|integer|min:1|max:50',
         ]);
 
         // Maak het pakket aan
@@ -126,7 +126,7 @@ class FoodPackageController extends Controller
             'date_issued' => 'nullable|date',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|exists:products,id',
-            'products.*.amount' => 'required|integer|min:1',
+            'products.*.amount' => 'required|integer|min:1|max:50',
         ]);
 
         // Update het pakket
