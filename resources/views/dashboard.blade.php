@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-8">
 
-                <!-- 🟥 Validatiefouten bovenaan -->
+                <!-- Validatiefouten -->
                 @if ($errors->any())
                     <div class="mb-6 bg-red-100 border border-red-300 text-red-800 px-6 py-4 rounded-md shadow-sm">
                         <h3 class="font-semibold mb-2">Er zijn fouten gevonden:</h3>
@@ -21,7 +21,7 @@
                     </div>
                 @endif
 
-                <!-- 📅 Formulier -->
+                <!-- Selectieformulier -->
                 <form method="GET" action="{{ route('dashboard') }}" class="mb-8">
                     <div class="flex flex-wrap gap-6 items-end">
                         <!-- Maand -->
@@ -59,8 +59,8 @@
                     </div>
                 </form>
 
-                <!-- 📊 Rapport tonen -->
-                @if (isset($reportData) && count($reportData) > 0)
+                <!-- Rapportdata -->
+                @if ($reportData->isNotEmpty())
                     <h3 class="text-xl font-semibold mb-6 text-gray-800 border-b pb-2">Maandoverzicht</h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white rounded-lg shadow-sm">
@@ -84,7 +84,7 @@
                             </tbody>
                         </table>
                     </div>
-                @elseif(request()->has('month') || request()->has('year'))
+                @elseif(request()->has('month') && request()->has('year'))
                     <p class="text-red-600 mt-6 text-center font-semibold">Geen data gevonden voor de geselecteerde maand en jaar.</p>
                 @endif
 
