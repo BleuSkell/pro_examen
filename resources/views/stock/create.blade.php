@@ -1,14 +1,29 @@
 <x-app-layout>
     <div class="flex justify-center items-center min-h-screen bg-gray-700">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-xl p-8">
+            {{-- Toon validatiefouten --}}
+            @if ($errors->any())
+                <div class="mb-4 text-red-600">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('stock.store') }}" method="POST" class="space-y-6">
                 @csrf
 
                 <div>
                     <label class="block font-semibold mb-2" for="company_name">Company naam</label>
-                    <input type="text" name="company_name" id="company_name" required
-                        placeholder="Typ een company naam"
-                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                    <select name="company_name" id="company_name" required
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="">Kies een company</option>
+                        @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->company_name }}">{{ $supplier->company_name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div>
@@ -30,14 +45,20 @@
                     <select name="categorie" id="categorie" required
                         class="w-full px-4 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <option value="">Kies een categorie</option>
-                        <option value="groenten">Groenten</option>
-                        <option value="fruit">Fruit</option>
-                        <option value="vlees">Vlees</option>
-                        <option value="vis">Vis</option>
-                        <option value="zuivel">Zuivel</option>
-                        <option value="granen">Granen</option>
-                        <option value="dranken">Dranken</option>
-                        <option value="snacks">Snacks</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-2" for="stock_id">Product</label>
+                    <select name="stock_id" id="stock_id" required
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="">Kies een product</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->product_name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -51,3 +72,4 @@
         </div>
     </div>
 </x-app-layout>
+

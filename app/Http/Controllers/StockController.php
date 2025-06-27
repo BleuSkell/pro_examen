@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Stock;
-use App\Models\Product;
+use Illuminate\Http\Request;
 
 class StockController extends Controller
 {
@@ -13,7 +12,7 @@ class StockController extends Controller
      */
     public function index()
     {
-        $stocks = Stock::with('product')->get();
+        $stocks = Stock::with('product')->where('is_active', true)->get();
         return view('stock.index', compact('stocks'));
     }
 
@@ -22,9 +21,11 @@ class StockController extends Controller
      */
     public function create()
     {
-        // eventueel producten ophalen voor dropdown
-        $products = Product::all();
-        return view('stock.create', compact('products'));
+        // Haal suppliers, categories en producten op voor het formulier
+        $suppliers = \App\Models\Supplier::all();
+        $categories = \App\Models\ProductCategory::all();
+        $products = \App\Models\Product::all();
+        return view('stock.create', compact('suppliers', 'categories', 'products'));
     }
 
     /**
@@ -32,14 +33,17 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        // Validatie en opslaan
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
+        $request->validate([
+            'stock_id' => 'required|exists:products,id', // Let op: validatie blijft op products, want je kiest een product
             'amount' => 'required|integer|min:0',
         ]);
-        $validated['date_created'] = now();
-        $validated['is_active'] = true;
-        Stock::create($validated);
+
+        Stock::create([
+            'product_id' => $request->stock_id, // Sla op als product_id in de database
+            'amount' => $request->amount,
+            'date_created' => now(),
+            'is_active' => true,
+        ]);
 
         return redirect()->route('stock.index')->with('success', 'Voorraad toegevoegd!');
     }
@@ -70,8 +74,7 @@ class StockController extends Controller
      */
     public function edit(Stock $stock)
     {
-        $products = Product::all();
-        return view('stock.update', compact('stock', 'products'));
+        return view('stock.edit', compact('stock'));
     }
 
     /**
@@ -79,12 +82,16 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
+        $request->validate([
+            'stock_id' => 'required|exists:products,id',
             'amount' => 'required|integer|min:0',
         ]);
-        $validated['date_modified'] = now();
-        $stock->update($validated);
+
+        $stock->update([
+            'product_id' => $request->stock_id,
+            'amount' => $request->amount,
+            'date_updated' => now(),
+        ]);
 
         return redirect()->route('stock.index')->with('success', 'Voorraad bijgewerkt!');
     }
