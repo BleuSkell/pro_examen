@@ -29,3 +29,26 @@ return new class extends Migration
         Schema::dropIfExists('stocks');
     }
 };
+
+// SQL voor MySQL
+//DELIMITER $$
+
+//CREATE PROCEDURE add_product_and_stock(
+//    IN p_product_name VARCHAR(100),
+//    IN p_supplier_id BIGINT,
+//    IN p_category_id BIGINT,
+//    IN p_amount INT
+//)
+//BEGIN
+//    DECLARE new_product_id BIGINT;
+
+//    INSERT INTO products (product_name, supplier_id, product_category_id, barcode, date_created, date_updated, is_active)
+//    VALUES (p_product_name, p_supplier_id, p_category_id, UUID(), NOW(), NOW(), TRUE);
+
+//    SET new_product_id = LAST_INSERT_ID();
+
+//    INSERT INTO stocks (product_id, amount, date_created, date_updated, is_active)
+//    VALUES (new_product_id, p_amount, NOW(), NOW(), TRUE);
+//END$$
+
+//DELIMITER ;
