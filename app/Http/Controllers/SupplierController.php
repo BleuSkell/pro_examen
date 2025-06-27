@@ -12,7 +12,9 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        //
+        $suppliers = Supplier::with('contactPerson')->paginate(5);
+
+        return view('suppliers.index', compact('suppliers'));
     }
 
     /**
