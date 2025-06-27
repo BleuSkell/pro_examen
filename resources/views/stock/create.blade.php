@@ -52,15 +52,15 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-2" for="stock_id">Product</label>
-                    <select name="stock_id" id="stock_id" required
-                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        <option value="">Kies een product</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->product_name }}</option>
-                        @endforeach
-                    </select>
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+                        Opslaan
+                    </button>
                 </div>
+            </form>
+        </div>
+    </div>
+</x-app-layout>
 
                 <div>
                     <button type="submit"

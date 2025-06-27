@@ -33,14 +33,48 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'stock_id' => 'required|exists:products,id', // Let op: validatie blijft op products, want je kiest een product
-            'amount' => 'required|integer|min:0',
-        ]);
+        $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
 
-        Stock::create([
-            'product_id' => $request->stock_id, // Sla op als product_id in de database
-            'amount' => $request->amount,
+        $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
+        if (!$supplier) {
+            $supplier = \App\Models\Supplier::create([
+                'company_name' => $validated['company_name'],
+                'contact_person_id' => 1,
+                'address' => '',
+                'next_delivery_date' => now(),
+                'next_delivery_time' => now()->format('H:i:s'),
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
+
+        $category = \App\Models\ProductCategory::find($validated['categorie']);
+        if (!$category) {
+            abort(400, 'Categorie niet gevonden');
+        }
+
+        $product = \App\Models\Product::where([
+            ['product_name', $validated['product_name']],
+            ['supplier_id', $supplier->id],
+            ['product_category_id', $category->id],
+        ])->first();
+
+        if (!$product) {
+            $product = \App\Models\Product::create([
+                'product_name' => $validated['product_name'],
+                'supplier_id' => $supplier->id,
+                'product_category_id' => $category->id,
+                'barcode' => uniqid(),
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
+
+        \App\Models\Stock::create([
+            'product_id' => $product->id,
+            'amount' => $validated['amount'],
             'date_created' => now(),
             'is_active' => true,
         ]);
@@ -74,7 +108,9 @@ class StockController extends Controller
      */
     public function edit(Stock $stock)
     {
-        return view('stock.edit', compact('stock'));
+        $suppliers = \App\Models\Supplier::all();
+        $categories = \App\Models\ProductCategory::all();
+        return view('stock.update', compact('stock', 'suppliers', 'categories'));
     }
 
     /**
@@ -82,14 +118,48 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
-        $request->validate([
-            'stock_id' => 'required|exists:products,id',
-            'amount' => 'required|integer|min:0',
-        ]);
+        $validated = $request->only(['company_name', 'product_name', 'categorie', 'amount']);
+
+        $supplier = \App\Models\Supplier::where('company_name', $validated['company_name'])->first();
+        if (!$supplier) {
+            $supplier = \App\Models\Supplier::create([
+                'company_name' => $validated['company_name'],
+                'contact_person_id' => 1,
+                'address' => '',
+                'next_delivery_date' => now(),
+                'next_delivery_time' => now()->format('H:i:s'),
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
+
+        $category = \App\Models\ProductCategory::find($validated['categorie']);
+        if (!$category) {
+            abort(400, 'Categorie niet gevonden');
+        }
+
+        $product = \App\Models\Product::where([
+            ['product_name', $validated['product_name']],
+            ['supplier_id', $supplier->id],
+            ['product_category_id', $category->id],
+        ])->first();
+
+        if (!$product) {
+            $product = \App\Models\Product::create([
+                'product_name' => $validated['product_name'],
+                'supplier_id' => $supplier->id,
+                'product_category_id' => $category->id,
+                'barcode' => uniqid(),
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
 
         $stock->update([
-            'product_id' => $request->stock_id,
-            'amount' => $request->amount,
+            'product_id' => $product->id,
+            'amount' => $validated['amount'],
             'date_updated' => now(),
         ]);
 

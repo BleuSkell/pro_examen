@@ -8,6 +8,13 @@
         <div class="mb-2"><strong>Datum aangemaakt:</strong> 
             {{ $spStock->DateCreated ? \Carbon\Carbon::parse($spStock->DateCreated)->format('d-m-Y H:i') : ($stock->date_created ? \Carbon\Carbon::parse($stock->date_created)->format('d-m-Y H:i') : '-') }}
         </div>
-        <a href="{{ route('stock.index') }}" class="inline-block mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">Terug</a>
+        <div class="flex justify-between mt-6">
+            <a href="{{ route('stock.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                Terug
+            </a>
+            <a href="{{ route('stock.edit', $stock->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                Bewerken
+            </a>
+        </div>
     </div>
 </x-app-layout>
