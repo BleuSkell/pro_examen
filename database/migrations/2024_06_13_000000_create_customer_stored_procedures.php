@@ -34,7 +34,7 @@ class CreateCustomerStoredProcedures extends Migration
                     address,
                     is_active,
                     date_created,
-                    updated_at
+                    date_updated
                 ) VALUES (
                     p_family_contact_persons_id,
                     p_amount_adults,
@@ -86,7 +86,7 @@ class CreateCustomerStoredProcedures extends Migration
                     family_name = p_family_name,
                     address = p_address,
                     is_active = p_is_active,
-                    updated_at = NOW()
+                    date_updated = NOW()
                 WHERE id = p_id;
             END
         ');

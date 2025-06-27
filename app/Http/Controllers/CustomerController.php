@@ -41,23 +41,31 @@ class CustomerController extends Controller
     {
         try {
             $input = $request->all();
+            // Ensure is_active is set to 1 or 0
+            $input['is_active'] = $request->has('is_active') ? 1 : 0;
             if (isset($input['address'])) {
                 $input['address'] = mb_substr($input['address'], 0, 255);
             }
-            $validated = validator($input, [
+            $validated = $request->validate([
                 'family_contact_persons_id' => 'required|exists:family_contact_persons,id',
-                'amount_adults' => 'required|integer',
-                'amount_children' => 'nullable|integer',
-                'amount_babies' => 'nullable|integer',
+                'amount_adults' => 'required|integer|min:0',
+                'amount_children' => 'nullable|integer|min:0',
+                'amount_babies' => 'nullable|integer|min:0',
                 'special_wishes' => 'nullable|string|max:255',
                 'family_name' => 'required|string|max:100',
                 'address' => 'required|string|max:255|unique:customers,address',
                 'is_active' => 'boolean',
             ], [
                 'address.unique' => 'Dit adres is al in gebruik.',
-                'address.max' => 'Het adres mag maximaal 255 tekens zijn.'
-            ])->validate();
-
+                'address.max' => 'Het adres mag maximaal 255 tekens zijn.',
+                'family_contact_persons_id.required' => 'Contactpersoon is verplicht.',
+                'family_contact_persons_id.exists' => 'De geselecteerde contactpersoon bestaat niet.',
+                'amount_adults.required' => 'Aantal volwassenen is verplicht.',
+                'amount_adults.min' => 'Aantal volwassenen moet minimaal 0 zijn.',
+                'family_name.required' => 'Achternaam gezin is verplicht.',
+                'address.required' => 'Adres is verplicht.',
+            ]);
+            // Call stored procedure for create
             DB::statement('CALL sp_create_customer(?, ?, ?, ?, ?, ?, ?, ?)', [
                 $validated['family_contact_persons_id'],
                 $validated['amount_adults'],
@@ -66,10 +74,13 @@ class CustomerController extends Controller
                 $validated['special_wishes'] ?? '',
                 $validated['family_name'],
                 $validated['address'],
-                $validated['is_active'] ?? 0
+                $input['is_active'],
             ]);
-            return redirect()->route('custome   rs.index')->with('success', 'Klant succesvol aangemaakt.');
+            return redirect()->route('customers.index')->with('success', 'Klant succesvol aangemaakt.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
+            \Log::error('Error creating customer: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Er is een fout opgetreden bij het aanmaken van de klant.');
         }
     }
@@ -81,8 +92,8 @@ class CustomerController extends Controller
     {
         try {
             $customer = DB::select('SELECT * FROM customers WHERE id = ?', [$id]);
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Klant niet gevonden.');
+            if (empty($customer)) {
+                return redirect()->route('customers.index')->with('error', 'Klant niet gevonden.');
             }
             return view('customers.show', ['customer' => $customer[0]]);
         } catch (\Exception $e) {
@@ -97,8 +108,8 @@ class CustomerController extends Controller
     {
         try {
             $customer = DB::select('SELECT * FROM customers WHERE id = ?', [$id]);
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Klant niet gevonden.');
+            if (empty($customer)) {
+                return redirect()->route('customers.index')->with('error', 'Klant niet gevonden.');
             }
             $familyContactPersons = \App\Models\FamilyContactPerson::all();
             return view('customers.edit', ['customer' => $customer[0], 'familyContactPersons' => $familyContactPersons]);
@@ -112,32 +123,44 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        try {
-            $validated = $request->validate([
-                'family_contact_persons_id' => 'required|exists:family_contact_persons,id',
-                'amount_adults' => 'required|integer',
-                'amount_children' => 'nullable|integer',
-                'amount_babies' => 'nullable|integer',
-                'special_wishes' => 'nullable|string|max:255',
-                'family_name' => 'required|string|max:100',
-                'address' => 'required|string|max:255|unique:customers,address,' . $id,
-                'is_active' => 'boolean',
-            ]);
-            DB::statement('CALL sp_update_customer(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                $id,
-                $validated['family_contact_persons_id'],
-                $validated['amount_adults'],
-                $validated['amount_children'] ?? 0,
-                $validated['amount_babies'] ?? 0,
-                $validated['special_wishes'] ?? '',
-                $validated['family_name'],
-                $validated['address'],
-                $validated['is_active'] ?? 0
-            ]);
-            return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Er is een fout opgetreden bij het bijwerken van de klant.');
+        $input = $request->all();
+        // Ensure is_active is set to 1 or 0
+        $input['is_active'] = $request->has('is_active') ? 1 : 0;
+        if (isset($input['address'])) {
+            $input['address'] = mb_substr($input['address'], 0, 255);
         }
+        $validated = $request->validate([
+            'family_contact_persons_id' => 'required|exists:family_contact_persons,id',
+            'amount_adults' => 'required|integer|min:0',
+            'amount_children' => 'nullable|integer|min:0',
+            'amount_babies' => 'nullable|integer|min:0',
+            'special_wishes' => 'nullable|string|max:255',
+            'family_name' => 'required|string|max:100',
+            'address' => 'required|string|max:255|unique:customers,address,' . $id,
+            'is_active' => 'boolean',
+        ], [
+            'address.unique' => 'Dit adres is al in gebruik.',
+            'address.max' => 'Het adres mag maximaal 255 tekens zijn.',
+            'family_contact_persons_id.required' => 'Contactpersoon is verplicht.',
+            'family_contact_persons_id.exists' => 'De geselecteerde contactpersoon bestaat niet.',
+            'amount_adults.required' => 'Aantal volwassenen is verplicht.',
+            'amount_adults.min' => 'Aantal volwassenen moet minimaal 0 zijn.',
+            'family_name.required' => 'Achternaam gezin is verplicht.',
+            'address.required' => 'Adres is verplicht.',
+        ]);
+        // Call stored procedure for update
+        DB::statement('CALL sp_update_customer(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+            $id,
+            $validated['family_contact_persons_id'],
+            $validated['amount_adults'],
+            $validated['amount_children'] ?? 0,
+            $validated['amount_babies'] ?? 0,
+            $validated['special_wishes'] ?? '',
+            $validated['family_name'],
+            $validated['address'],
+            $input['is_active'],
+        ]);
+        return redirect()->route('customers.index')->with('success', 'Klant succesvol bijgewerkt.');
     }
 
     /**
@@ -147,8 +170,9 @@ class CustomerController extends Controller
     {
         try {
             DB::statement('CALL sp_delete_customer(?)', [$id]);
-            return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
+            return redirect()->route('customers.index')->with('success', 'Klant succesvol verwijderd.');
         } catch (\Exception $e) {
+            \Log::error('Error deleting customer: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Er is een fout opgetreden bij het verwijderen van de klant.');
         }
     }
