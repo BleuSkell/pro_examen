@@ -25,13 +25,13 @@ class Customer extends Model
         'family_name',
         'address',
         'date_created',
-        'date_modified',
+        'date_updated',
         'is_active',
     ];
 
     public function familyContactPerson()
     {
-        return $this->hasOne(FamilyContactPerson::class);
+        return $this->belongsTo(FamilyContactPerson::class, 'family_contact_persons_id');
     }
 
     public function foodPackages()
