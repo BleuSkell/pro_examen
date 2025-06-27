@@ -61,11 +61,13 @@
                         </button>
                     </a>
 
-                    <a href="" class="inline-block">
-                        <button class="bg-red-500 hover:bg-red-600 p-3 text-white rounded-lg">
+                    <form method="POST" action="{{ route('foodPackages.destroy', $packageDetails['food_package_id']) }}" onsubmit="return confirm('Weet je zeker dat je dit pakket wilt verwijderen?');" class="inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 p-3 text-white rounded-lg">
                             {{ __('Verwijderen') }}
                         </button>
-                    </a>
+                    </form>
                 </div>
             </div>
         </div>

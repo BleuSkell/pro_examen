@@ -136,9 +136,12 @@ class FoodPackageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(FoodPackage $foodPackage)
+    public function destroy($id)
     {
-        //
+        $foodPackage = FoodPackage::findOrFail($id);
+        $foodPackage->delete();
+
+        return redirect()->route('foodPackages.index')->with('success', 'Voedselpakket verwijderd!');
     }
 
     /**
