@@ -23,9 +23,11 @@ class UserFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
+    {   
+        $guestRoleId = Role::where('role_name', 'Guest')->value('id');
+
         return [
-            'role_id' => Role::factory(),
+            'role_id' => $guestRoleId,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => $this->faker->dateTime(),
