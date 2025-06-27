@@ -17,7 +17,7 @@ class FoodPackage extends Model
     protected $table = 'food_packages';
 
     protected $fillable = [
-        'customers_id',
+        'customer_id',
         'products_id',
         'package_number',
         'date_composed',

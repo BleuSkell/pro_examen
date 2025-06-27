@@ -9,7 +9,7 @@ use App\Models\Supplier;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
  */
-class StockFactory extends Factory
+class ProductFactory extends Factory
 {
     /**
      * Define the model's default state.
