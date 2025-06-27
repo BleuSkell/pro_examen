@@ -32,4 +32,9 @@ class FamilyContactPerson extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    
+    public function contactPerson()
+    {
+        return $this->belongsTo(\App\Models\ContactPerson::class, 'contact_person_id');
+    }
 }
