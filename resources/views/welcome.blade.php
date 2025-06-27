@@ -88,9 +88,22 @@
                 Beheer eenvoudig voedselpakketten en klanten.<br>
                 Start direct met het overzicht!
             </div>
-            <a href="" class="button">
-                Naar overzicht
-            </a>
+            @if (Route::has('login'))
+                @auth
+                    <a href="{{ route('dashboard') }}" class="button">
+                        Naar dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="button" style="margin-right: 0.5rem;">
+                        Inloggen
+                    </a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="button" style="background:#fff; color:#18B5FE; border:2px solid #18B5FE;">
+                            Registreren
+                        </a>
+                    @endif
+                @endauth
+            @endif
         </div>
         <div class="footer">
             &copy; {{ date('Y') }} Voedselpakketten | Gemaakt met Laravel
