@@ -15,6 +15,15 @@
             <a href="{{ route('stock.edit', $stock->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
                 Bewerken
             </a>
+            <form action="{{ route('stock.destroy', $stock->id) }}" method="POST" class="inline-block ml-2"
+                  onsubmit="return confirm('Weet je zeker dat je deze voorraad wilt verwijderen?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition">
+                    Verwijderen
+                </button>
+            </form>
         </div>
     </div>
 </x-app-layout>
