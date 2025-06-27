@@ -10,7 +10,11 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {   
+        if (config('database.default') !== 'mysql') {
+            return;
+        }
+
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_get_all_foodpackages');
 
         DB::unprepared('
@@ -32,7 +36,10 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {
+    {   
+        if (config('database.default') !== 'mysql') {
+            return;
+        }
         Schema::dropIfExists('DROP PROCEDURE IF EXISTS sp_get_all_foodpackages');
     }
 };
