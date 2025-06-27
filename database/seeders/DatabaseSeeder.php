@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
                 'amount_babies' => fake()->numberBetween(0, 2),
                 'special_wishes' => fake()->optional()->randomElement(['Geen varken', 'Gluten', 'Vegetarisch', 'Veganistisch', 'Geen noten', 'Geen zuivel']),
                 'family_name' => $fcp->last_name,
-                'address' => fake()->address(),
+                'address' => fake()->streetName() . ' ' . fake()->buildingNumber(),
                 'date_created' => now(),
                 'date_updated' => now(),
                 'is_active' => true,

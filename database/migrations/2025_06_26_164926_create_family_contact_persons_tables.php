@@ -23,6 +23,8 @@ return new class extends Migration
             $table->dateTime('date_created')->useCurrent();
             $table->dateTime('date_updated')->useCurrent()->nullable();
             $table->boolean('is_active')->default(true);
+            $table->unsignedBigInteger('contact_person_id')->nullable();
+            $table->foreign('contact_person_id')->references('id')->on('contact_persons')->nullOnDelete();
         });
     }
 
