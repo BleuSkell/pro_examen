@@ -15,6 +15,10 @@ class IsWarehouseWorker
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = auth()->user();
+        if (!$user || $user->role->role_name !== 'Warehouse worker') {
+            abort(403, 'Alleen bestemd voor magazijn medewerkers.');
+        }
         return $next($request);
     }
 }

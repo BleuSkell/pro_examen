@@ -11,6 +11,8 @@ class Role extends Model
     /** @use HasFactory<\Database\Factories\RolesFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'roles';
 
     protected $fillable = [
@@ -22,6 +24,6 @@ class Role extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
 }

@@ -6,24 +6,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 
-class ProductCategory extends Model
+class Stock extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductCategoryFactory> */
+    /** @use HasFactory<\Database\Factories\StockFactory> */
     use HasFactory;
 
     public $timestamps = false;
 
-    protected $table = 'product_categories';
+    protected $table = 'stocks';
 
     protected $fillable = [
-        'category_name',
+        'product_id',
+        'amount',
         'date_created',
         'date_modified',
         'is_active',
     ];
 
-    public function products()
+    public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasOne(Product::class);
     }
 }

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
             $table->string('product_name', 100);
             $table->string('barcode', 50)->unique();
-            $table->integer('amount');
             $table->dateTime('date_created')->useCurrent();
             $table->dateTime('date_updated')->useCurrent()->nullable();
             $table->boolean('is_active')->default(true);

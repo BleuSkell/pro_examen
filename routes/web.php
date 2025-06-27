@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\IsDirector;
+use App\Http\Middleware\IsWarehouseWorker;
+use App\Http\Middleware\IsVolunteer;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,6 +22,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/customer.php';
-require __DIR__.'/product.php';
+require __DIR__.'/stock.php';
 require __DIR__.'/food_package.php';
 require __DIR__.'/supplier.php';

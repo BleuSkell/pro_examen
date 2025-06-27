@@ -12,6 +12,8 @@ class Supplier extends Model
     /** @use HasFactory<\Database\Factories\SupplierFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'suppliers';
 
     protected $fillable = [

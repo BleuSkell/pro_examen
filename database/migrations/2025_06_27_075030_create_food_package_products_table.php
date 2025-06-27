@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('food_packages', function (Blueprint $table) {
+        Schema::create('food_package_products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
-            $table->string('package_number', 50)->unique();
-            $table->date('date_composed');
-            $table->date('date_issued')->nullable();
+            $table->foreignId('food_package_id')->constrained('food_packages')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->integer('amount');
             $table->dateTime('date_created')->useCurrent();
             $table->dateTime('date_updated')->useCurrent()->nullable();
             $table->boolean('is_active')->default(true);
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('food_packages');
+        Schema::dropIfExists('food_package_products');
     }
 };
