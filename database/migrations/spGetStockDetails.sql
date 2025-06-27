@@ -18,8 +18,8 @@ BEGIN
         INNER JOIN product_categories PC ON PC.id = P.product_category_id
         INNER JOIN suppliers SUP ON SUP.id = P.supplier_id
         WHERE S.is_active = 1
-          AND PC.category_name = varCategory
-          AND SUP.company_name = varCompany;
+          AND PC.category_name COLLATE utf8mb4_unicode_ci = varCategory COLLATE utf8mb4_unicode_ci
+          AND SUP.company_name COLLATE utf8mb4_unicode_ci = varCompany COLLATE utf8mb4_unicode_ci;
     END IF;
 END$$
 
