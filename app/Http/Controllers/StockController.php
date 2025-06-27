@@ -49,8 +49,20 @@ class StockController extends Controller
      */
     public function show(Stock $stock)
     {
-        $stock->load('product');
-        return view('stock.show', compact('stock'));
+        $category = optional($stock->product->productCategory)->category_name;
+        $company = optional($stock->product->supplier)->company_name;
+
+        $spResult = \DB::select('CALL spGetStockDetails(?, ?)', [$category, $company]);
+
+        // Zoek het juiste record uit de SP-resultaten op basis van productnaam en amount
+        $spStock = collect($spResult)->first(function($item) use ($stock) {
+            return $item->Product === optional($stock->product)->product_name && $item->Amount == $stock->amount;
+        });
+
+        return view('stock.show', [
+            'spStock' => $spStock,
+            'stock' => $stock,
+        ]);
     }
 
     /**

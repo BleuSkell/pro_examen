@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS spGetStockDetails;
+DELIMITER $$
 
 CREATE PROCEDURE spGetStockDetails(IN varCategory VARCHAR(255), IN varCompany VARCHAR(255))
 BEGIN
@@ -19,4 +21,6 @@ BEGIN
           AND PC.category_name = varCategory
           AND SUP.company_name = varCompany;
     END IF;
-END;
+END$$
+
+DELIMITER ;
