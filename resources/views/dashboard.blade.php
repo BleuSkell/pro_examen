@@ -9,6 +9,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-8">
 
+                <!-- Foutmeldingen blok -->
+                @if($errors->any())
+                    <div class="mb-6 bg-red-100 border border-red-300 text-red-700 px-6 py-4 rounded-md shadow-sm">
+                        <ul class="list-disc list-inside text-sm">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <!-- Formulier -->
                 <form method="GET" action="{{ route('dashboard') }}" class="mb-8">
                     @csrf

@@ -9,11 +9,11 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $validated = $request->validate([
-            'month' => 'nullable|integer|between:1,12',
-            'year' => 'nullable|integer|min:2020|max:' . date('Y'),
+            'month' => 'required|integer|between:1,12',
+            'year' => 'required|integer|min:2020|max:' . date('Y'),
         ], [
-            'month.required' => 'Selecteer een maand.',
-            'year.required' => 'Selecteer een jaar.',
+            'month.required' => 'U bent vergeten de maand te selecteren.',
+            'year.required' => 'U bent vergeten het jaar te selecteren.',
         ]);
 
         $reportData = [];
@@ -22,9 +22,7 @@ class DashboardController extends Controller
             $month = $request->input('month');
             $year = $request->input('year');
 
-            if ($month && $year) {
-                $reportData = $this->getReportData($month, $year);
-            }
+            $reportData = $this->getReportData($month, $year);
         }
 
         return view('dashboard', compact('reportData'));
@@ -32,7 +30,7 @@ class DashboardController extends Controller
 
     protected function getReportData($month, $year)
     {
-        // Dummy data, vervang met je database logica
+        // Dummy data, vervang dit door database-logica
         return collect([
             (object)[
                 'category' => 'Groente',
