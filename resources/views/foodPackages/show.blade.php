@@ -8,6 +8,14 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                @if (session('success'))
+                    <div class="flex flex-row justify-center">
+                        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md shadow w-[50%]">
+                            {{ session('success') }}
+                        </div>
+                    </div>
+                @endif
+
                 <div>
                     <h3 class="font-bold text-lg mb-2">Pakket: {{ $packageDetails['package_number'] }}</h3>
                     <p><strong>Datum samengesteld:</strong> {{ $packageDetails['date_composed'] }}</p>
@@ -47,7 +55,7 @@
                 </div>
 
                 <div class="flex flex-row justify-between mt-4">
-                    <a href="" class="inline-block">
+                    <a href="{{ route('foodPackages.edit', $packageDetails['food_package_id']) }}" class="inline-block">
                         <button class="bg-blue-500 hover:bg-blue-600 p-3 text-white rounded-lg">
                             {{ __('Bewerken') }}
                         </button>

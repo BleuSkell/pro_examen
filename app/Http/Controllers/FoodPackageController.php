@@ -81,17 +81,56 @@ class FoodPackageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(FoodPackage $foodPackage)
+    public function edit($id)
     {
-        //
+        $foodPackage = FoodPackage::findOrFail($id);
+        $customers = Customer::orderBy('family_name')->get();
+        $products = Product::all();
+
+        // Haal de gekoppelde producten op
+        $selectedProducts = FoodPackageProduct::where('food_package_id', $foodPackage->id)->get();
+
+        return view('foodPackages.edit', compact('foodPackage', 'customers', 'products', 'selectedProducts'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, FoodPackage $foodPackage)
+    public function update(Request $request, $id)
     {
-        //
+        $foodPackage = FoodPackage::findOrFail($id);
+
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'date_composed' => 'required|date',
+            'date_issued' => 'nullable|date',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.amount' => 'required|integer|min:1',
+        ]);
+
+        // Update het pakket
+        $foodPackage->update([
+            'customer_id' => $request->customer_id,
+            'date_composed' => $request->date_composed,
+            'date_issued' => $request->date_issued,
+            'date_updated' => now(),
+        ]);
+
+        // Verwijder oude producten en voeg nieuwe toe
+        FoodPackageProduct::where('food_package_id', $foodPackage->id)->delete();
+        foreach ($request->products as $product) {
+            FoodPackageProduct::create([
+                'food_package_id' => $foodPackage->id,
+                'product_id' => $product['product_id'],
+                'amount' => $product['amount'],
+                'date_created' => now(),
+                'date_updated' => now(),
+                'is_active' => true,
+            ]);
+        }
+
+        return redirect()->route('foodPackages.show', $foodPackage->id)->with('success', 'Voedselpakket bijgewerkt!');
     }
 
     /**
