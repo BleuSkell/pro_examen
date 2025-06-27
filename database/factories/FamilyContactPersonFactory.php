@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ContactPerson>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FamilyMember>
  */
-class ContactPersonFactory extends Factory
+class FamilyContactPersonFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,6 +20,8 @@ class ContactPersonFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'infix' => $this->faker->optional()->word(),
             'last_name' => $this->faker->lastName(),
+            'birth_date' => $this->faker->date(),
+            'relation' => $this->faker->randomElement(['Ouder', 'Kind', 'Broer', 'Zus', 'Overig']),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->unique()->phoneNumber(),
             'date_created' => $this->faker->dateTime(),

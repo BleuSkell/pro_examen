@@ -17,7 +17,20 @@ class ProductCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'category_name' => $this->faker->randomElement([
+                'Groenten',
+                'Fruit',
+                'Vlees',
+                'Vis',
+                'Zuivel',
+                'Granen',
+                'Dranken',
+                'Snacks',
+                'Overig'
+            ]),
+            'date_created' => $this->faker->dateTime(),
+            'date_updated' => $this->faker->dateTime(),
+            'is_active' => $this->faker->boolean(90),
         ];
     }
 }

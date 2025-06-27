@@ -11,6 +11,8 @@ class ProductCategory extends Model
     /** @use HasFactory<\Database\Factories\ProductCategoryFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'product_categories';
 
     protected $fillable = [

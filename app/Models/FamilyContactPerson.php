@@ -11,6 +11,8 @@ class FamilyContactPerson extends Model
     /** @use HasFactory<\Database\Factories\FamilyMemberFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'family_contact_persons';
 
     protected $fillable = [

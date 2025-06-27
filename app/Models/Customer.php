@@ -12,6 +12,8 @@ class Customer extends Model
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'customers';
 
     protected $fillable = [
