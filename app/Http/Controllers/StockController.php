@@ -163,7 +163,7 @@ class StockController extends Controller
             'date_updated' => now(),
         ]);
 
-        return redirect()->route('stock.index')->with('success', 'Voorraad bijgewerkt!');
+        return redirect()->route('stock.index')->with('success', 'Gegevens succesvol gewijzigd!');
     }
 
     /**
