@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
@@ -131,13 +132,12 @@ class SupplierController extends Controller
                 'required',
                 'email',
                 'max:255',
-                'regex:/^[A-Za-z0-9_@.]+$/',
-                'unique:contact_persons,email,' . $supplier->contactPerson->id,
+                // Laravel email rule is voldoende, regex verwijderd
+                Rule::unique('contact_persons', 'email')->ignore($supplier->contactPerson->id),
             ],
         ], [
-            'email.required' => 'u bent verplicht om dit in te vullen',
-            'email.regex' => 'Het e-mailadres bevat ongeldige tekens.',
-            'email.email' => 'voer een geldig e-mailadres in',
+            'email.required' => 'U bent verplicht om dit in te vullen',
+            'email.email' => 'Voer een geldig e-mailadres in',
             'email.unique' => 'Dit e-mailadres is al in gebruik.',
         ]);
 
@@ -153,12 +153,10 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        // Verwijder eerst de contactpersoon als die bestaat
         if ($supplier->contactPerson) {
             $supplier->contactPerson->delete();
         }
 
-        // Verwijder vervolgens de leverancier
         $supplier->delete();
 
         return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol verwijderd.');
