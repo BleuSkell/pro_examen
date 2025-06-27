@@ -137,7 +137,7 @@ class SupplierController extends Controller
             ],
         ], [
             'email.required' => 'U bent verplicht om dit in te vullen',
-            'email.email' => 'Voer een geldig e-mailadres in',
+            'email.email' => 'Voer hier een geldig e-mailadres in',
             'email.unique' => 'Dit e-mailadres is al in gebruik.',
         ]);
 
@@ -159,6 +159,6 @@ class SupplierController extends Controller
 
         $supplier->delete();
 
-        return redirect()->route('suppliers.index')->with('success', 'Leverancier succesvol verwijderd.');
+        return redirect()->route('suppliers.index')->with('success', 'Leverancier  succesvol verwijderd.');
     }
 }
