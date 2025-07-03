@@ -36,10 +36,10 @@
                     @forelse($customers as $customer)
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 border-b">
-                                @if(isset($customer->contact_first_name))
-                                    {{ $customer->contact_first_name }}
-                                    {{ $customer->contact_infix ?? '' }}
-                                    {{ $customer->contact_last_name }}
+                                @if(isset($customer->family_contact_first_name))
+                                    {{ $customer->family_contact_first_name }}
+                                    {{ $customer->family_contact_infix ?? '' }}
+                                    {{ $customer->family_contact_last_name }}
                                 @else
                                     {{ $customer->familyContactPerson?->first_name ?? '' }}
                                     {{ $customer->familyContactPerson?->infix ?? '' }}
