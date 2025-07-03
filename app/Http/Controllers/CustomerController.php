@@ -141,7 +141,20 @@ class CustomerController extends Controller
                 'family_name.required' => 'Achternaam gezin is verplicht.',
                 'address.required' => 'Adres is verplicht.',
             ]);
-            // Call stored procedure for update
+            \Log::debug('Updating customer via sp_update_customer', [
+                'id' => $customer->id,
+                'params' => [
+                    $customer->id,
+                    $validated['family_contact_persons_id'],
+                    $validated['amount_adults'],
+                    $validated['amount_children'] ?? 0,
+                    $validated['amount_babies'] ?? 0,
+                    $validated['special_wishes'] ?? '',
+                    $validated['family_name'],
+                    $validated['address'],
+                    $input['is_active'],
+                ]
+            ]);
             DB::statement('CALL sp_update_customer(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
                 $customer->id,
                 $validated['family_contact_persons_id'],
@@ -168,7 +181,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         try {
-            DB::statement('CALL sp_delete_customer(?)', [$customer->id]);
+            $customer->delete();
             return redirect()->route('customers.index')->with('success', 'Klant succesvol verwijderd.');
         } catch (\Exception $e) {
             \Log::error('Error deleting customer: ' . $e->getMessage());

@@ -14,7 +14,7 @@ class FoodPackageTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fetches_food_packages_with_all_relations()
     {
         // Arrange: maak een food package met alle benodigde relaties
@@ -40,7 +40,7 @@ class FoodPackageTest extends TestCase
         $this->assertEquals($category->id, $result->foodPackageProducts[0]->product->productCategory->id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_food_package_with_relations()
     {
         // Arrange: maak een customer en product
@@ -72,7 +72,7 @@ class FoodPackageTest extends TestCase
         $this->assertEquals($product->id, $foodPackage->foodPackageProducts[0]->product_id);
     }
     
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_it_updates_food_package()
     {
         // Arrange: maak een food package
@@ -95,7 +95,7 @@ class FoodPackageTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_it_deletes_food_package()
     {
         // Arrange: maak een food package
