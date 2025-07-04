@@ -188,4 +188,19 @@ class CustomerController extends Controller
             return redirect()->back()->with('error', 'Er is een fout opgetreden bij het verwijderen van de klant.');
         }
     }
+
+    /**
+     * Delete all customers (for testing only).
+     */
+    public function destroyAll()
+    {
+        try {
+            \DB::table('food_packages')->delete();
+            Customer::query()->delete();
+            return redirect()->route('customers.index')->with('success', 'Alle klanten zijn verwijderd.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting all customers: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Er is een fout opgetreden bij het verwijderen van alle klanten.');
+        }
+    }
 }

@@ -14,7 +14,9 @@
         
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Klanten</h1>
-            <a href="{{ route('customers.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Klant toevoegen</a>
+            <div class="flex gap-2">
+                <a href="{{ route('customers.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Klant toevoegen</a>
+            </div>
         </div>
         
         <div class="overflow-x-auto">
@@ -89,5 +91,14 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="container mx-auto px-4 py-6 flex justify-center">
+        <form action="{{ route('customers.destroyAll') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle klanten wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Verwijder alle klanten <span class="text-xs font-normal">(voor testen)</span>
+            </button>
+        </form>
     </div>
 </x-app-layout>
