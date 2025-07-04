@@ -13,9 +13,15 @@ class SupplierController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $suppliers = Supplier::with('contactPerson')->paginate(5);
-        return view('suppliers.index', compact('suppliers'));
+    {   
+        try {
+            $suppliers = Supplier::with('contactPerson')
+                ->orderBy('date_updated', 'desc')
+                ->paginate(5);
+            return view('suppliers.index', compact('suppliers'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['general' => 'Er is een fout opgetreden bij het ophalen van de leveranciers']);
+        }
     }
 
     /**

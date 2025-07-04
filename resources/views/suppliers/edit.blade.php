@@ -8,6 +8,17 @@
     <div class="py-12">
         <div class="max-w-md mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+                @if ($errors->any())
+                    <div class="flex flex-row justify-center">
+                        <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
 
                 <form method="POST" action="{{ route('suppliers.update', $supplier) }}">
                     @csrf
