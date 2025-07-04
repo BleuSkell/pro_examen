@@ -14,7 +14,9 @@
         
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Klanten</h1>
-            <a href="{{ route('customers.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Klant toevoegen</a>
+            <div class="flex gap-2">
+                <a href="{{ route('customers.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Klant toevoegen</a>
+            </div>
         </div>
         
         <div class="overflow-x-auto">
@@ -36,10 +38,10 @@
                     @forelse($customers as $customer)
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 border-b">
-                                @if(isset($customer->contact_first_name))
-                                    {{ $customer->contact_first_name }}
-                                    {{ $customer->contact_infix ?? '' }}
-                                    {{ $customer->contact_last_name }}
+                                @if(isset($customer->family_contact_first_name))
+                                    {{ $customer->family_contact_first_name }}
+                                    {{ $customer->family_contact_infix ?? '' }}
+                                    {{ $customer->family_contact_last_name }}
                                 @else
                                     {{ $customer->familyContactPerson?->first_name ?? '' }}
                                     {{ $customer->familyContactPerson?->infix ?? '' }}
@@ -89,5 +91,14 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="container mx-auto px-4 py-6 flex justify-center">
+        <form action="{{ route('customers.destroyAll') }}" method="POST" onsubmit="return confirm('Weet je zeker dat je alle klanten wilt verwijderen? Dit kan niet ongedaan worden gemaakt.');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Verwijder alle klanten <span class="text-xs font-normal">(voor testen)</span>
+            </button>
+        </form>
     </div>
 </x-app-layout>

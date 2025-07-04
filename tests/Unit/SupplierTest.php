@@ -11,7 +11,7 @@ class SupplierTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function a_supplier_has_a_contact_person()
     {
         // Hier maak je een contact persoon aan 
