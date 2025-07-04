@@ -20,10 +20,12 @@ return new class extends Migration
                         ,FP.package_number
                         ,FP.date_composed
                         ,FP.date_issued
+                        ,FP.date_updated
+                        ,FP.date_created
                 
                 FROM food_packages AS FP
 
-                ORDER BY FP.date_composed DESC;
+                ORDER BY FP.date_created DESC;
             END
         ');
     }
