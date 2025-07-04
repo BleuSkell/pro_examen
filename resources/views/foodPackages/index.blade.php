@@ -24,6 +24,14 @@
                     </div>
                 @endif
 
+                @if ($errors->any())
+                    <div class="flex flex-row justify-center">
+                        <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-md shadow w-[50%]">
+                            {{ $errors->first() }}
+                        </div>
+                    </div>
+                @endif
+
                 @if ($foodPackages->isEmpty())
                     <div class="flex flex-row justify-center">
                         <div class="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded-md shadow w-[50%]">

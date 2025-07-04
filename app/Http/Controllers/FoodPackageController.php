@@ -186,6 +186,9 @@ class FoodPackageController extends Controller
             $foodPackage->delete();
 
             return redirect()->route('foodPackages.index')->with('success', 'Voedselpakket verwijderd!');
+        } catch (ModelNotFoundException $e) {
+            // Pakket niet gevonden (404)
+            abort(404, 'Voedselpakket niet gevonden.');
         } catch (Exception $e) {
             // Foutafhandeling
             return back()->withErrors('Er is een fout opgetreden bij het verwijderen van het voedselpakket: ' . $e->getMessage());
@@ -198,22 +201,22 @@ class FoodPackageController extends Controller
     public function show($id)
     {
         try {
-            // Haal pakketdetails en producten op via stored procedure
-            $results = DB::select('CALL sp_get_food_package_details_by_id(?)', [$id]);
             $pdo = DB::getPdo();
             $stmt = $pdo->prepare('CALL sp_get_food_package_details_by_id(?)');
             $stmt->execute([$id]);
 
             $packageDetails = $stmt->fetch(\PDO::FETCH_ASSOC);
+
             $stmt->nextRowset();
             $products = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            $stmt->closeCursor(); // Cruciaal om fout 2014 te voorkomen
 
             return view('foodPackages.show', [
                 'packageDetails' => $packageDetails,
                 'products' => $products,
             ]);
         } catch (Exception $e) {
-            // Foutafhandeling
             return back()->withErrors('Er is een fout opgetreden bij het ophalen van de pakketdetails: ' . $e->getMessage());
         }
     }
